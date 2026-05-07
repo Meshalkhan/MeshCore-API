@@ -1,0 +1,1 @@
+export const ApiKeysTable = ({ keys }: { keys: Array<{ id: string; name: string; key_prefix: string }> }) => (<section className="card" id="api-keys"><h3>API Key Management</h3><table><thead><tr><th>Name</th><th>Prefix</th></tr></thead><tbody>{keys.map((key) => (<tr key={key.id}><td>{key.name}</td><td>{key.key_prefix}</td></tr>))}</tbody></table></section>);

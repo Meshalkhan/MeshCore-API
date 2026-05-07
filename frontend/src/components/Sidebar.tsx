@@ -1,0 +1,1 @@
+export const Sidebar = () => (<aside className="sidebar"><h2>MeshCore</h2><nav><a href="#dashboard">Dashboard</a><a href="#users">Users</a><a href="#api-keys">API Keys</a><a href="#analytics">Analytics</a></nav></aside>);

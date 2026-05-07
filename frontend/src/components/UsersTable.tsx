@@ -1,0 +1,1 @@
+export const UsersTable = ({ users }: { users: Array<{ id: string; email: string; role: string }> }) => (<section className="card" id="users"><h3>User Management</h3><table><thead><tr><th>Email</th><th>Role</th></tr></thead><tbody>{users.map((user) => (<tr key={user.id}><td>{user.email}</td><td>{user.role}</td></tr>))}</tbody></table></section>);

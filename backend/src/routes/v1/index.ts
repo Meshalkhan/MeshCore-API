@@ -1,0 +1,15 @@
+import { Router } from 'express';
+import { authRouter } from '../../modules/auth/auth.routes';
+import { tenantsRouter } from '../../modules/tenants/tenants.routes';
+import { usersRouter } from '../../modules/users/users.routes';
+import { apiKeysRouter } from '../../modules/apikeys/apikeys.routes';
+import { analyticsRouter } from '../../modules/analytics/analytics.routes';
+import { healthRouter } from '../../modules/health/health.routes';
+import { authenticate } from '../../core/middleware/auth';
+export const v1Router = Router();
+v1Router.use('/health', healthRouter);
+v1Router.use('/auth', authRouter);
+v1Router.use('/tenants', authenticate, tenantsRouter);
+v1Router.use('/users', authenticate, usersRouter);
+v1Router.use('/api-keys', authenticate, apiKeysRouter);
+v1Router.use('/analytics', authenticate, analyticsRouter);

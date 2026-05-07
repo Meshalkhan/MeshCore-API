@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/components/analyticscards.tsx","./src/components/apikeystable.tsx","./src/components/loginform.tsx","./src/components/sidebar.tsx","./src/components/userstable.tsx","./src/pages/app.tsx","./src/pages/dashboard.tsx","./src/services/api.ts","./src/store/session.ts"],"version":"5.9.3"}

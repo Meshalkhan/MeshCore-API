@@ -1,0 +1,1 @@
+export const AnalyticsCards = ({ cards }: { cards: Array<{ metric: string; value: string | number }> }) => (<section className="cards" id="analytics">{cards.map((card) => (<article key={card.metric} className="card"><p>{card.metric}</p><h3>{card.value}</h3></article>))}</section>);

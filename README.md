@@ -72,38 +72,6 @@ Create `backend/.env` from `backend/.env.example`.
 - Password: `password123`
 - Tenant ID: `00000000-0000-0000-0000-000000000001`
 
-## Backend Deployment on Vercel
-
-1. Import this repository into Vercel and set **Root Directory** to `backend`.
-2. Keep default Vercel build behavior (serverless function from `backend/api/index.ts`).
-3. Add environment variables in Vercel project settings:
-   - `DATABASE_URL`
-   - `JWT_SECRET`
-   - `JWT_EXPIRES_IN`
-   - `NODE_ENV=production`
-4. Deploy. All routes are handled by the Express app through Vercel routing.
-5. Your API base URL becomes:
-   - `https://<your-backend-project>.vercel.app/api/v1`
-
-## Frontend Deployment on Vercel (Same Repository)
-
-Use the same Git repository and create a second Vercel project for frontend.
-
-1. Import the same repository into Vercel again (new project).
-2. Set **Root Directory** to `frontend`.
-3. Set environment variable:
-   - `VITE_API_BASE_URL=https://<your-backend-project>.vercel.app/api/v1`
-4. Deploy.
-
-## Monorepo Setup (Backend + Frontend)
-
-- Project 1 (API):
-  - Root Directory: `backend`
-  - Runtime entry: `backend/api/index.ts`
-- Project 2 (Admin UI):
-  - Root Directory: `frontend`
-  - Uses `VITE_API_BASE_URL` to call backend project
-
 ## Goal
 
 Demonstrate enterprise backend engineering skills.

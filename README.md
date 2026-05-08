@@ -66,6 +66,39 @@ Create `backend/.env` from `backend/.env.example`.
   - `npm run dev`
   - `npm run dev:frontend`
 
+## Vercel Deployment (Full Stack)
+
+This repo is configured to deploy on a single Vercel project:
+- Frontend (`frontend/dist`) is served as static output.
+- Backend (`api/[...all].ts`) runs as a serverless function.
+- Requests to `/api/*` are routed to the backend function.
+
+### 1) Import Project
+
+- Import this repository in Vercel.
+- Keep the project root at repository root.
+
+### 2) Build Settings
+
+- Install command: `npm install`
+- Build command: `npm run build --workspace frontend`
+- Output directory: `frontend/dist`
+
+### 3) Environment Variables (Vercel Project Settings)
+
+Set these for Production (and Preview if needed):
+- `NODE_ENV=production`
+- `DATABASE_URL=<your-managed-postgres-connection-string>`
+- `JWT_SECRET=<strong-random-secret>`
+- `JWT_EXPIRES_IN=1h` (optional)
+- `VITE_API_BASE_URL=/api/v1` (optional; default already uses `/api/v1` in production)
+
+### 4) Database Setup
+
+Run migrations and seed against your production database before first use:
+- `npm run db:migrate --workspace backend`
+- `npm run db:seed --workspace backend`
+
 ## Demo Login
 
 - Email: `admin@meshcore.local`

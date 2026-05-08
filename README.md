@@ -66,24 +66,6 @@ Create `backend/.env` from `backend/.env.example`.
   - `npm run dev`
   - `npm run dev:frontend`
 
-## Vercel Deployment (Full Stack)
-
-This repo is configured to deploy on a single Vercel project:
-- Frontend (`frontend/dist`) is served as static output.
-- Backend (`api/index.ts`) runs as a serverless service.
-- Requests to `/api/*` are handled by the API service.
-
-### 1) Import Project
-
-- Import this repository in Vercel.
-- Keep the project root at repository root.
-
-### 2) Vercel Project Settings
-
-- Framework Preset: `Services`
-- Keep build/install/output settings as default (services are configured via `vercel.json`)
-- Ensure root directory is the repository root
-
 ### 3) Environment Variables (Vercel Project Settings)
 
 Set these for Production (and Preview if needed):

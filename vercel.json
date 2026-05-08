@@ -2,12 +2,12 @@
   "experimentalServices": {
     "web": {
       "entrypoint": "frontend",
-      "routePrefix": "/"
+      "routePrefix": "/",
+      "framework": "vite"
     },
     "api": {
       "entrypoint": "api/index.ts",
       "routePrefix": "/api",
-      "framework": "express",
       "maxDuration": 30
     }
   }

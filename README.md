@@ -100,7 +100,7 @@ Run migrations and seed against your production database before first use:
 - `npm run db:seed --workspace backend`
 
 ## Demo Login
-
+ 
 - Email: `admin@meshcore.local`
 - Password: `password123`
 - Tenant ID: `00000000-0000-0000-0000-000000000001`

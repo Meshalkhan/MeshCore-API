@@ -1,22 +1,13 @@
 {
-  "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace frontend",
-  "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/[...all].ts": {
-      "runtime": "@vercel/node",
+  "experimentalServices": {
+    "web": {
+      "entrypoint": "frontend",
+      "routePrefix": "/"
+    },
+    "api": {
+      "entrypoint": "api/[...all].ts",
+      "routePrefix": "/api",
       "maxDuration": 30
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  }
 }

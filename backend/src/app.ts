@@ -18,6 +18,7 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 500, standardHeaders: true })
 app.use(pinoHttp({ logger }));
 app.use(requestContext);
 app.use('/api/v1', v1Router);
+app.use('/v1', v1Router);
 app.use(errorHandler);
 
 export default app;

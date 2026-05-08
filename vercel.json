@@ -5,8 +5,9 @@
       "routePrefix": "/"
     },
     "api": {
-      "entrypoint": "api",
+      "entrypoint": "api/index.ts",
       "routePrefix": "/api",
+      "framework": "express",
       "maxDuration": 30
     }
   }

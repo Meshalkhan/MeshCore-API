@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { Sidebar } from '../components/Sidebar';
 import { AnalyticsCards } from '../components/AnalyticsCards';
 import { UsersTable } from '../components/UsersTable';
 import { ApiKeysTable } from '../components/ApiKeysTable';
+import { AppShell } from '../components/layout/AppShell';
+import { Spinner } from '../components/ui/Spinner';
+import { AlertBanner } from '../components/ui/AlertBanner';
+import { getRequestErrorMessage } from '../lib/http-error';
 
 interface DashboardData {
   users: Array<{ id: string; email: string; role: string }>;
@@ -14,12 +17,11 @@ interface DashboardData {
 export const Dashboard = () => {
   const [data, setData] = useState<DashboardData>({ users: [], keys: [], cards: [] });
   const [loading, setLoading] = useState(true);
-  const [alert, setAlert] = useState('');
+  const [banner, setBanner] = useState<{ variant: 'success' | 'error'; text: string } | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
-    setAlert('');
-
+    setBanner(null);
     try {
       const [users, keys, analytics] = await Promise.all([
         api.get('/users'),
@@ -31,45 +33,47 @@ export const Dashboard = () => {
         keys: keys.data.data,
         cards: analytics.data.cards
       });
-      setAlert('Dashboard synced successfully.');
-    } catch {
+      setBanner({ variant: 'success', text: 'Data refreshed.' });
+    } catch (err) {
       setData({ users: [], keys: [], cards: [] });
-      setAlert('Failed to load dashboard data. Please retry.');
+      setBanner({ variant: 'error', text: getRequestErrorMessage(err) });
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     load().catch(() => undefined);
-  }, []);
+  }, [load]);
 
-  if (loading) {
+  if (loading && !data.users.length && !data.keys.length) {
     return (
       <div className="page-loader-wrap">
-        <div className="page-loader" />
-        <p>Loading dashboard...</p>
+        <Spinner label="Loading workspace" />
       </div>
     );
   }
 
   return (
-    <div className="layout fade-in" id="dashboard">
-      <Sidebar />
-      <main>
-        <div className="toolbar">
-          <h1>Tenant Dashboard</h1>
-          <button onClick={() => load().catch(() => undefined)}>Refresh</button>
-        </div>
-        {alert && (
-          <p className={`alert ${alert.startsWith('Failed') ? 'alert-error' : 'alert-success'}`}>
-            {alert}
-          </p>
-        )}
+    <AppShell
+      title="Workspace"
+      toolbar={
+        <button type="button" className="btn-secondary" onClick={() => load().catch(() => undefined)} disabled={loading}>
+          {loading ? 'Refreshing…' : 'Refresh'}
+        </button>
+      }
+    >
+      <div className="stack" id="dashboard">
+        {banner ? <AlertBanner variant={banner.variant}>{banner.text}</AlertBanner> : null}
+        {loading ? (
+          <div className="inline-loader">
+            <Spinner />
+          </div>
+        ) : null}
         <AnalyticsCards cards={data.cards} />
         <UsersTable users={data.users} />
         <ApiKeysTable keys={data.keys} />
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 };

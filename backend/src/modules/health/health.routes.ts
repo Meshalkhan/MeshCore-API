@@ -1,3 +1,5 @@
 import { Router } from 'express';
+import { healthController } from './health.controller';
+
 export const healthRouter = Router();
-healthRouter.get('/', (_req, res) => { res.json({ status: 'ok', service: 'meshcore-api' }); });
+healthRouter.get('/', healthController.get);

@@ -2,21 +2,21 @@ import { useEffect, useState } from 'react';
 import { LoginForm } from '../components/LoginForm';
 import { Dashboard } from './Dashboard';
 import { sessionStore } from '../store/session';
+import { Spinner } from '../components/ui/Spinner';
 
 export const App = () => {
   const [authenticated, setAuthenticated] = useState(Boolean(sessionStore.get()));
-  const [bootLoading, setBootLoading] = useState(true);
+  const [hydrating, setHydrating] = useState(true);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setBootLoading(false), 500);
-    return () => window.clearTimeout(timer);
+    const id = window.requestAnimationFrame(() => setHydrating(false));
+    return () => window.cancelAnimationFrame(id);
   }, []);
 
-  if (bootLoading) {
+  if (hydrating) {
     return (
       <div className="page-loader-wrap">
-        <div className="page-loader" />
-        <p>Booting admin UI...</p>
+        <Spinner />
       </div>
     );
   }

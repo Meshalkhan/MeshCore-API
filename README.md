@@ -1,111 +1,75 @@
-# MeshCore API
+# MeshCore
 
-Scalable multi-tenant SaaS backend architecture.
+MeshCore demonstrates a production-shaped split between HTTP routing, controllers, domain services, and infrastructure (PostgreSQL, structured logging, centralized errors). The UI is a signed-in workspace for tenant-scoped lists and read-only analytics cards, suitable as a portfolio anchor for full-stack SaaS work.
 
 ## Features
 
-- JWT authentication
-- RBAC
-- Multi-tenant APIs
-- Secure architecture
-- Docker support
+- Versioned HTTP API under `/api/v1` (duplicate mount `/v1` for compatibility)
+- JWT auth, role checks, tenant header enforcement, rate limiting, Helmet
+- Admin UI with session persistence, loading and error surfaces, and empty states
+- PostgreSQL access via connection pool; migrations and seed scripts in `backend/scripts`
+- Dockerfiles for backend and frontend; `docker-compose.yml` for local Postgres
 
-## Tech Stack
+## Tech stack
 
-- Node.js
-- TypeScript
-- Express.js
-- PostgreSQL
-- JWT
-- Docker
-- React + Vite
+| Area | Stack |
+|------|--------|
+| API | Node.js 20+, TypeScript, Express, Zod, `pg`, Pino |
+| UI | React 18, Vite, TypeScript, Axios |
+| Data | PostgreSQL |
+| Deploy | Vercel (static web + serverless API service), optional Docker |
 
 ## Prerequisites
 
-- Node.js `>= 20` (LTS recommended)
+- Node.js `>= 20`
 - npm `>= 10`
-- Docker + Docker Compose (for local PostgreSQL)
+- Docker and Docker Compose (optional, for local Postgres)
 - Git
 
-## Environment Variables
-
-Create `backend/.env` from `backend/.env.example`.
-
-### Required
-
-- `JWT_SECRET`: strong secret used to sign JWTs
-
-### Database (choose one approach)
-
-- `DATABASE_URL`: preferred for cloud deployments
-- OR local split vars:
-  - `DB_HOST`
-  - `DB_PORT`
-  - `DB_NAME`
-  - `DB_USER`
-  - `DB_PASSWORD`
-
-### Optional
-
-- `NODE_ENV`: defaults to `development`
-- `PORT`: defaults to `4000`
-- `JWT_EXPIRES_IN`: defaults to `1h`
-- `VITE_API_BASE_URL` (frontend): API base URL for admin UI
-
-## Local Deployment
+## Setup
 
 1. `npm install`
-2. Configure `backend/.env` from `backend/.env.example`
-3. Start PostgreSQL:
-  - `docker compose up -d postgres`
-4. Create schema:
-  - `npm run db:migrate --workspace backend`
-5. Seed demo data:
-  - `npm run db:seed --workspace backend`
-6. Run backend and frontend (separate terminals):
-  - `npm run dev`
-  - `npm run dev:frontend`
+2. Copy `backend/.env.example` to `backend/.env` and set secrets and database variables.
+3. `docker compose up -d postgres` when using the bundled Compose service.
+4. `npm run db:migrate --workspace backend`
+5. `npm run db:seed --workspace backend`
+6. `npm run dev` and `npm run dev:frontend` in separate terminals, or rely on your own process manager.
 
-## Vercel Deployment (Full Stack)
+Demo login (after seed): email `admin@meshcore.local`, password `password123`, tenant `00000000-0000-0000-0000-000000000001`.
 
-This repo is configured to deploy on a single Vercel project:
-- Frontend (`frontend/dist`) is served as static output.
-- Backend (`api/index.ts`) runs as a serverless service.
-- Requests to `/api/*` are handled by the API service.
+## Environment variables
 
-### 1) Import Project
+Production and Preview on Vercel should continue to use the same variable names already configured for the live project:
 
-- Import this repository in Vercel.
-- Keep the project root at repository root.
+| Variable | Purpose |
+|----------|---------|
+| `NODE_ENV` | `production` in prod |
+| `DATABASE_URL` | Primary Postgres connection string |
+| `JWT_SECRET` | Signing secret for access tokens |
+| `JWT_EXPIRES_IN` | Optional TTL (default `1h`) |
+| `PORT` | Local server port (default `4000`) |
+| `VITE_API_BASE_URL` | Frontend API base; production builds default to `/api/v1` when unset |
 
-### 2) Vercel Project Settings
-
-- Framework Preset: `Services`
-- Keep build/install/output settings as default (services are configured via `vercel.json`)
-- Ensure root directory is the repository root
-
-### 3) Environment Variables (Vercel Project Settings)
-
-Set these for Production (and Preview if needed):
-- `NODE_ENV=production`
-- `DATABASE_URL=<your-managed-postgres-connection-string>`
-- `JWT_SECRET=<strong-random-secret>`
-- `JWT_EXPIRES_IN=1h` (optional)
-- `VITE_API_BASE_URL=/api/v1` (optional; default already uses `/api/v1` in production)
-
-### 4) Database Setup
-
-Run migrations and seed against your production database before first use:
-- `npm run db:migrate --workspace backend`
-- `npm run db:seed --workspace backend`
-
-## Demo Login
- 
-- Email: `admin@meshcore.local`
-- Password: `password123`
-- Tenant ID: `00000000-0000-0000-0000-000000000001`
+Local-only split database variables (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`) remain supported when `DATABASE_URL` is not set.
 
 ## Goal
 
-Demonstrate enterprise backend engineering skills.
+Ship a credible reference implementation: clear module boundaries, predictable API errors, and an admin UI that behaves well under load and failure, without unnecessary abstraction layers.
+
+## Mermaid diagram
+
+```mermaid
+flowchart LR
+  subgraph Browser
+    UI[React SPA]
+  end
+  subgraph Edge["Vercel"]
+    WEB[Static Vite build]
+    FN[Express on /api]
+  end
+  DB[(PostgreSQL)]
+  UI --> WEB
+  UI -->|"Bearer JWT, x-tenant-id"| FN
+  FN --> DB
+```
 

@@ -6,6 +6,7 @@ import { ApiKeysTable } from '../components/ApiKeysTable';
 import { AppShell } from '../components/layout/AppShell';
 import { Spinner } from '../components/ui/Spinner';
 import { Toast } from '../components/ui/Toast';
+import type { MeshCoreTab } from '../components/Sidebar';
 import { getRequestErrorMessage } from '../lib/http-error';
 
 interface DashboardData {
@@ -17,6 +18,7 @@ interface DashboardData {
 export const Dashboard = () => {
   const [data, setData] = useState<DashboardData>({ users: [], keys: [], cards: [] });
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<MeshCoreTab>('overview');
   const [banner, setBanner] = useState<{ variant: 'success' | 'error'; text: string } | null>(null);
 
   const load = useCallback(async () => {
@@ -46,7 +48,7 @@ export const Dashboard = () => {
     load().catch(() => undefined);
   }, [load]);
 
-  if (loading && !data.users.length && !data.keys.length) {
+  if (loading && !data.users.length && !data.keys.length && !data.cards.length) {
     return (
       <div className="page-loader-wrap">
         <Spinner label="Loading workspace" />
@@ -56,7 +58,8 @@ export const Dashboard = () => {
 
   return (
     <AppShell
-      title="Workspace"
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
       toolbar={
         <button type="button" className="btn-secondary" onClick={() => load().catch(() => undefined)} disabled={loading}>
           {loading ? 'Refreshing…' : 'Refresh'}
@@ -69,9 +72,18 @@ export const Dashboard = () => {
             <Spinner />
           </div>
         ) : null}
-        <AnalyticsCards cards={data.cards} />
-        <UsersTable users={data.users} />
-        <ApiKeysTable keys={data.keys} />
+
+        {activeTab === 'overview' ? (
+          <>
+            <AnalyticsCards cards={data.cards} />
+            <UsersTable users={data.users} />
+            <ApiKeysTable keys={data.keys} />
+          </>
+        ) : null}
+
+        {activeTab === 'analytics' ? <AnalyticsCards cards={data.cards} /> : null}
+        {activeTab === 'users' ? <UsersTable users={data.users} /> : null}
+        {activeTab === 'api-keys' ? <ApiKeysTable keys={data.keys} /> : null}
       </div>
       {banner ? (
         <Toast variant={banner.variant} onClose={() => setBanner(null)}>

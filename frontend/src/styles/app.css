@@ -42,10 +42,16 @@ body {
   display: grid;
   grid-template-columns: 280px 1fr;
   min-height: 100vh;
+  transition: grid-template-columns 0.2s ease;
+}
+
+.layout--sidebar-collapsed {
+  grid-template-columns: 80px 1fr;
 }
 
 .main-surface {
   padding: 20px;
+  min-width: 0;
 }
 
 .page-header {
@@ -180,12 +186,18 @@ body {
 }
 
 .sidebar {
+  position: relative;
   background: var(--sidebar);
   color: var(--muted);
   padding: 20px 10px;
   border-right: 1px solid var(--border);
   width: 280px;
   box-sizing: border-box;
+  transition: width 0.2s ease;
+}
+
+.layout--sidebar-collapsed .sidebar {
+  width: 80px;
 }
 
 .sidebar-brand {
@@ -203,12 +215,18 @@ body {
   flex-shrink: 0;
 }
 
+.sidebar-brand-text {
+  min-width: 0;
+  overflow: hidden;
+}
+
 .sidebar-name {
   margin: 0;
   font-weight: 600;
   font-size: 14px;
   color: #000000;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .sidebar-meta {
@@ -216,6 +234,7 @@ body {
   font-size: 12px;
   color: var(--muted);
   letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 .sidebar-close {
@@ -246,25 +265,114 @@ body {
   gap: 4px;
 }
 
-.sidebar-nav a {
+.sidebar-link {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--muted);
   text-decoration: none;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
   font-size: 14px;
   font-weight: 400;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: none;
+  transform: none;
 }
 
-.sidebar-nav a:hover {
+.sidebar-link:hover:not(:disabled) {
   color: #000000;
   background: var(--surface-muted);
   font-weight: 500;
+  transform: none;
+  box-shadow: none;
 }
 
-.sidebar-nav a:first-child {
+.sidebar-link--active,
+.sidebar-link--active:hover:not(:disabled) {
   color: #ffffff;
   background: #000000;
+  font-weight: 500;
+}
+
+.sidebar-link-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+
+.sidebar-link--active .sidebar-link-dot {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.sidebar-link-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-collapse {
+  position: absolute;
+  top: 24px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #000000;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transform: none;
+}
+
+.sidebar-collapse:hover:not(:disabled) {
+  background: var(--surface-muted);
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar--collapsed .sidebar-brand {
+  justify-content: center;
+  margin: 0 0 28px;
+}
+
+.sidebar--collapsed .sidebar-brand-text,
+.sidebar--collapsed .sidebar-link-label {
+  display: none;
+}
+
+.sidebar--collapsed .sidebar-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar--collapsed .sidebar-link {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar--collapsed .sidebar-link-dot {
+  width: 10px;
+  height: 10px;
 }
 
 .sidebar-overlay {
@@ -682,7 +790,8 @@ button:disabled {
 }
 
 @media (max-width: 960px) {
-  .layout {
+  .layout,
+  .layout--sidebar-collapsed {
     grid-template-columns: 1fr;
   }
 
@@ -707,7 +816,9 @@ button:disabled {
     box-shadow: none;
   }
 
-  .sidebar {
+  .sidebar,
+  .layout--sidebar-collapsed .sidebar,
+  .sidebar--collapsed {
     position: fixed;
     left: 0;
     top: 0;
@@ -733,6 +844,20 @@ button:disabled {
     justify-content: center;
   }
 
+  .sidebar-collapse {
+    display: none;
+  }
+
+  .sidebar--collapsed .sidebar-brand-text,
+  .sidebar--collapsed .sidebar-link-label {
+    display: block;
+  }
+
+  .sidebar--collapsed .sidebar-link {
+    justify-content: flex-start;
+    padding: 10px 20px;
+  }
+
   .sidebar-brand {
     margin-bottom: 20px;
   }
@@ -742,10 +867,8 @@ button:disabled {
     gap: 4px;
   }
 
-  .sidebar-nav a {
+  .sidebar-link {
     min-height: 44px;
-    display: flex;
-    align-items: center;
   }
 
   .page-header-menu {
@@ -779,7 +902,9 @@ button:disabled {
     width: 100%;
   }
 
-  .sidebar {
+  .sidebar,
+  .layout--sidebar-collapsed .sidebar,
+  .sidebar--collapsed {
     width: min(320px, 92vw);
   }
 }

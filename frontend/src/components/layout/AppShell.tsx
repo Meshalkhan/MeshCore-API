@@ -1,16 +1,27 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Sidebar } from '../Sidebar';
+import { Sidebar, type MeshCoreTab } from '../Sidebar';
+
+const TAB_COPY: Record<MeshCoreTab, { eyebrow: string; title: string }> = {
+  overview: { eyebrow: 'Console', title: 'Workspace' },
+  analytics: { eyebrow: 'Insights', title: 'Analytics' },
+  users: { eyebrow: 'Directory', title: 'Users' },
+  'api-keys': { eyebrow: 'Security', title: 'API keys' }
+};
 
 export const AppShell = ({
-  title,
+  activeTab,
+  onTabChange,
   toolbar,
   children
 }: {
-  title: string;
+  activeTab: MeshCoreTab;
+  onTabChange: (tab: MeshCoreTab) => void;
   toolbar?: ReactNode;
   children: ReactNode;
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const copy = TAB_COPY[activeTab];
 
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? 'hidden' : '';
@@ -27,8 +38,22 @@ export const AppShell = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  const handleTabChange = (tab: MeshCoreTab) => {
+    onTabChange(tab);
+    setSidebarOpen(false);
+  };
+
   return (
-    <div className={`layout fade-in${sidebarOpen ? ' layout--sidebar-open' : ''}`}>
+    <div
+      className={[
+        'layout',
+        'fade-in',
+        sidebarOpen ? 'layout--sidebar-open' : '',
+        sidebarCollapsed ? 'layout--sidebar-collapsed' : ''
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {sidebarOpen ? (
         <button
           type="button"
@@ -37,7 +62,14 @@ export const AppShell = ({
           onClick={() => setSidebarOpen(false)}
         />
       ) : null}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        open={sidebarOpen}
+        collapsed={sidebarCollapsed}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        onClose={() => setSidebarOpen(false)}
+        onToggleCollapse={() => setSidebarCollapsed((value) => !value)}
+      />
       <main className="main-surface">
         <header className="page-header">
           <div className="page-header-heading">
@@ -50,8 +82,8 @@ export const AppShell = ({
               <span className="page-header-menu-bars" aria-hidden />
             </button>
             <div>
-              <p className="eyebrow">Console</p>
-              <h1>{title}</h1>
+              <p className="eyebrow">{copy.eyebrow}</p>
+              <h1>{copy.title}</h1>
             </div>
           </div>
           {toolbar ? <div className="page-header-actions">{toolbar}</div> : null}

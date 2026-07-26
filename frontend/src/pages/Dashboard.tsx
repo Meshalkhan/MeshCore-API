@@ -5,7 +5,7 @@ import { UsersTable } from '../components/UsersTable';
 import { ApiKeysTable } from '../components/ApiKeysTable';
 import { AppShell } from '../components/layout/AppShell';
 import { Spinner } from '../components/ui/Spinner';
-import { AlertBanner } from '../components/ui/AlertBanner';
+import { Toast } from '../components/ui/Toast';
 import { getRequestErrorMessage } from '../lib/http-error';
 
 interface DashboardData {
@@ -64,7 +64,6 @@ export const Dashboard = () => {
       }
     >
       <div className="stack" id="dashboard">
-        {banner ? <AlertBanner variant={banner.variant}>{banner.text}</AlertBanner> : null}
         {loading ? (
           <div className="inline-loader">
             <Spinner />
@@ -74,6 +73,11 @@ export const Dashboard = () => {
         <UsersTable users={data.users} />
         <ApiKeysTable keys={data.keys} />
       </div>
+      {banner ? (
+        <Toast variant={banner.variant} onClose={() => setBanner(null)}>
+          {banner.text}
+        </Toast>
+      ) : null}
     </AppShell>
   );
 };
